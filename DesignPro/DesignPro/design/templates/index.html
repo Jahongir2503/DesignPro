@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Design.pro</title>
+</head>
+<body>
+<h1>Добро пожаловать на Design.pro!</h1>
+<p>Мы - дизайн-студия, специализирующаяся на создании уникальных и инновационных дизайнов.</p>
+{% if request.user.is_authenticated %}
+<p>Привет, {{ request.user.username }}!</p>
+<a href="{% url 'logout' %}?next=/">Выйти</a>
+{% else %}
+<a href="{% url 'login' %}">Войти</a> или <a href="{% url 'register' %}">Зарегистрироваться</a>
+{% endif %}
+<a href="{% url 'main_page' %}">Главная</a> <!-- Добавьте эту строку -->
+</body>
+</html>

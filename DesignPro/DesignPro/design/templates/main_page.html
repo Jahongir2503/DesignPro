@@ -1,0 +1,20 @@
+{% block content %}
+<h2>Выполненные заявки</h2>
+<ul>
+    {% for request in completed_requests %}
+    <li>
+        <h3>{{ request.title }}</h3>
+        <img src="{{ request.photo.url }}" alt="{{ request.title }}" width="300px" height="250px">
+        <p>Описание: {{ request.description }}</p>
+        <p>Время добавления: {{ request.created_at }}</p>
+        <p>Статус: {{ request.get_status_display }}</p>
+    </li>
+
+
+    {% empty %}
+
+    <li>Нет выполненных заявок.</li>
+    {% endfor %}
+</ul>
+<a href="javascript:history.back()">Назад</a>
+{% endblock %}
