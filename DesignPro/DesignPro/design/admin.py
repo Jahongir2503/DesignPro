@@ -15,4 +15,4 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Request)
 class RequestAdmin(admin.ModelAdmin):
-    list_display = ['title', 'description', 'status', 'created_at', 'due_date']
+    list_display = ['title', 'description', 'status', 'created_at', 'due_date', 'user']

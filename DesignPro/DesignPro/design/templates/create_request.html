@@ -1,0 +1,36 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создать новую заявку</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="my-4">Создать новую заявку</h1>
+    <a href="{% url 'index' %}">Главная</a>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.title.label_tag }}
+            {{ form.title }}
+        </div>
+        <div class="form-group">
+            {{ form.description.label_tag }}
+            {{ form.description }}
+        </div>
+        <div class="form-group">
+            {{ form.category.label_tag }}
+            {{ form.category }}
+        </div>
+        <div class="form-group">
+            {{ form.photo.label_tag }}
+            {{ form.photo }}
+        </div>
+        <button type="submit" class="btn btn-primary">Создать заявку</button>
+    </form>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

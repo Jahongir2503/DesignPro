@@ -2,6 +2,7 @@
 
 {% block content %}
   <h2>Регистрация</h2>
+<a href="{% url 'index' %}">Главная</a>
   <form method="post">
   {% csrf_token %}
     {{ form.as_p }}

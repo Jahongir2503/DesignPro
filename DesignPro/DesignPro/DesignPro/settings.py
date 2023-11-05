@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 
 from django.core.management.commands.runserver import Command as runserver
@@ -27,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'design.apps.DesignConfig',
     'django.contrib.admin',
+    'bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -115,5 +115,3 @@ AUTH_USER_MODEL = 'design.CustomUser'
 runserver.default_port = "8080"
 
 runserver.default_addr = 'localhost'
-
-
