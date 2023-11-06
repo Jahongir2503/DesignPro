@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Подтверждение удаления</title>
-</head>
-<body>
-    <h1>Вы уверены, что хотите удалить эту заявку?</h1>
-    <form method="post">
-        {% csrf_token %}
-        <input type="submit" value="Да, удалить">
-    </form>
-    <a href="{% url 'profile' %}">Нет, вернуться назад</a>
-</body>
-</html>
+{% block content %}
+<h1>Удалить заявку</h1>
+{% if request.status == 'NEW' %}
+<p>Вы уверены, что хотите удалить заявку: {{ request.title }}?</p>
+<form action="" method="POST">
+    {% csrf_token %}
+    <input type="submit" value="Да, удалить.">
+</form>
+{% else %}
+<p>Вы не можете удалить заявку, статус которой был изменен на "Принято в работу" или "Выполнено"</p>
+{% endif %}
+<a href="{% url 'profile' %}">Назад</a>
+{% endblock %}

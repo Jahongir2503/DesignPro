@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
 
-from .views import ChangeRequestStatusView
 from .views import IndexView, LoginView, RegisterView, LogoutView, MainPageView, ProfileView, CreateRequestView, \
     DeleteRequestView
 
@@ -15,6 +14,5 @@ urlpatterns = [
                   path('profile/', ProfileView.as_view(), name='profile'),
                   path('create_request/', CreateRequestView.as_view(), name='create_request'),
                   path('delete_request/<int:pk>/', DeleteRequestView.as_view(), name='delete_request'),
-                  path('change_request_status/<int:pk>/', ChangeRequestStatusView.as_view(), name='change_request_status'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

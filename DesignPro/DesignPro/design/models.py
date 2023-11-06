@@ -48,16 +48,3 @@ class Request(models.Model):
 
     def __str__(self):
         return self.title
-
-    def change_status(self, new_status, comment=None, design=None):
-        if self.status == self.NEW:
-            if new_status == self.COMPLETED and design is not None:
-                self.status = new_status
-                self.design = design
-                self.save()
-            elif new_status == self.IN_PROGRESS and comment is not None:
-                self.status = new_status
-                self.comment = comment
-                self.save()
-        else:
-            raise ValidationError('Смена статуса с «Принято в работу» или «Выполнено» невозможна.')

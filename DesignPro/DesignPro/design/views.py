@@ -89,27 +89,6 @@ class CreateRequestView(LoginRequiredMixin, CreateView):
         return reverse('profile')
 
 
-class DeleteRequestView(LoginRequiredMixin, View):
-    def get(self, request, pk):
-        request_to_delete = get_object_or_404(Request, pk=pk)
-        if request.user == request_to_delete.user:
-            if request_to_delete.status == Request.NEW:
-                return render(request, 'confirm_delete.html')
-            else:
-                messages.error(request, 'Вы не можете удалить заявки со статусом "Выполнено" или "Принято в работу".')
-                return HttpResponseRedirect(reverse('profile'))
-        else:
-            messages.error(request, 'Вы не можете удалить эту заявку.')
-            return HttpResponseRedirect(reverse('profile'))
-
-    def post(self, request, pk):
-        request_to_delete = get_object_or_404(Request, pk=pk)
-        if request.user == request_to_delete.user and request_to_delete.status == Request.NEW:
-            request_to_delete.delete()
-            messages.success(request, 'Заявка успешно удалена.')
-        return HttpResponseRedirect(reverse('profile'))
-
-
 class ChangeRequestStatusView(LoginRequiredMixin, View):
     def post(self, request, pk):
         request_to_change = get_object_or_404(Request, pk=pk)
@@ -119,3 +98,18 @@ class ChangeRequestStatusView(LoginRequiredMixin, View):
         if request.user == request_to_change.user:
             request_to_change.change_status(new_status, comment, design)
         return HttpResponseRedirect(reverse('index'))
+
+
+class DeleteRequestView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        request_to_delete = get_object_or_404(Request, pk=pk)
+        return render(request, 'confirm_delete.html', {'request': request_to_delete})
+
+    def post(self, request, pk):
+        request_to_delete = get_object_or_404(Request, pk=pk)
+        if request.user == request_to_delete.user and request_to_delete.status == Request.NEW:
+            request_to_delete.delete()
+            messages.success(request, 'Заявка успешно удалена.')
+        else:
+            messages.error(request, 'Вы не можете удалить эту заявку.')
+        return HttpResponseRedirect(reverse('profile'))
