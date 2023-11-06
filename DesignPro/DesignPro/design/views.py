@@ -1,8 +1,10 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
+from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import render
@@ -113,3 +115,13 @@ class DeleteRequestView(LoginRequiredMixin, View):
         else:
             messages.error(request, 'Вы не можете удалить эту заявку.')
         return HttpResponseRedirect(reverse('profile'))
+
+
+
+class AdminDashboardView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request):
+        all_requests = Request.objects.all()
+        return render(request, 'admin_dashboard.html', {'requests': all_requests})

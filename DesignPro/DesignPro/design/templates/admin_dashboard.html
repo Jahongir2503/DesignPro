@@ -1,0 +1,13 @@
+{% block content %}
+<h1>Панель администратора</h1>
+<ul>
+    {% for request in requests %}
+    <li>
+        <h3>{{ request.title }}</h3>
+        <img src="{{ request.photo.url }}" alt="{{ request.title }}" width="300px" height="250px">
+        <p>{{ request.description }}</p>
+        <p>Статус: {{ request.get_status_display }}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}
