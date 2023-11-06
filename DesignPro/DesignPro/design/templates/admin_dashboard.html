@@ -25,6 +25,7 @@
         <p>{{ request.description }}</p>
         <p>Категория: {{ request.category.name }}</p>
         <p>Статус: {{ request.get_status_display }}</p>
+        <a href="{% url 'change_request_status' request.id %}">Изменить статус</a>
     </li>
     {% endfor %}
 </ul>

@@ -1,0 +1,11 @@
+
+
+{% block content %}
+  <h1>Изменить статус заявки {{ request.title }}</h1>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Изменить статус</button>
+  </form>
+  <a href="{% url 'admin_dashboard' %}">Назад</a>
+{% endblock %}

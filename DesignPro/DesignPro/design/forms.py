@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ValidationError
 
 from .models import CustomUser
+from .models import Request
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -41,3 +42,23 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
+
+class ChangeRequestStatusForm(forms.ModelForm):
+    comment = forms.CharField(required=False)
+    design = forms.ImageField(required=False)
+
+    class Meta:
+        model = Request
+        fields = ['status', 'comment', 'design']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        comment = cleaned_data.get('comment')
+        design = cleaned_data.get('design')
+
+        if status == Request.IN_PROGRESS and not comment:
+            self.add_error('comment', 'Комментарий обязателен при смене статуса на "Принято в работу".')
+        elif status == Request.COMPLETED and not design:
+            self.add_error('design', 'Дизайн обязателен при смене статуса на "Выполнено".')

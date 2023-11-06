@@ -10,8 +10,9 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic.edit import CreateView, DeleteView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
+from .forms import ChangeRequestStatusForm
 from .forms import CustomUserCreationForm
 from .models import Category
 from .models import Request
@@ -145,3 +146,27 @@ class CategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class ChangeRequestStatusView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Request
+    form_class = ChangeRequestStatusForm
+    template_name = 'change_request_status.html'
+    success_url = reverse_lazy('admin_dashboard')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form):
+        print(self.request.FILES)
+        form = ChangeRequestStatusForm(self.request.POST, self.request.FILES, instance=self.object)
+        form.save()
+        return super().form_valid(form)
