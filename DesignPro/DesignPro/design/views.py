@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.forms import AuthenticationForm
@@ -7,17 +8,20 @@ from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
+from django.views.generic.edit import CreateView
 
 from .forms import CustomUserCreationForm
+from .models import Request
 
 
 class IndexView(View):
     def get(self, request):
         status = request.GET.get('status', 'all')
         if status != 'all':
-            completed_requests = Request.objects.filter(status=status).order_by('-created_at')
+            completed_requests = Request.objects.filter(status=status)
         else:
-            completed_requests = Request.objects.all().order_by('-created_at')
+            completed_requests = Request.objects.all()
+        completed_requests = completed_requests.order_by('-created_at')
         in_progress_count = Request.objects.filter(status=Request.IN_PROGRESS).count()
         return render(request, 'index.html',
                       {'completed_requests': completed_requests, 'in_progress_count': in_progress_count})
@@ -68,10 +72,6 @@ class ProfileView(LoginRequiredMixin, View):
         return render(request, 'profile.html')
 
 
-from django.views.generic.edit import CreateView
-from .models import Request
-
-
 class CreateRequestView(LoginRequiredMixin, CreateView):
     model = Request
     fields = ['title', 'description', 'category', 'photo']
@@ -81,18 +81,41 @@ class CreateRequestView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
+
     def get_success_url(self):
         return reverse('profile')
 
 
-def form_valid(self, form):
-    form.instance.user = self.request.user
-    return super().form_valid(form)
-
-
 class DeleteRequestView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        request_to_delete = get_object_or_404(Request, pk=pk)
+        if request.user == request_to_delete.user:
+            if request_to_delete.status == Request.NEW:
+                return render(request, 'confirm_delete.html')
+            else:
+                messages.error(request, 'Вы не можете удалить заявки со статусом "Выполнено" или "Принято в работу".')
+                return HttpResponseRedirect(reverse('profile'))
+        else:
+            messages.error(request, 'Вы не можете удалить эту заявку.')
+            return HttpResponseRedirect(reverse('profile'))
+
     def post(self, request, pk):
         request_to_delete = get_object_or_404(Request, pk=pk)
         if request.user == request_to_delete.user and request_to_delete.status == Request.NEW:
             request_to_delete.delete()
+            messages.success(request, 'Заявка успешно удалена.')
+        return HttpResponseRedirect(reverse('profile'))
+
+
+class ChangeRequestStatusView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        request_to_change = get_object_or_404(Request, pk=pk)
+        new_status = request.POST.get('status')
+        comment = request.POST.get('comment')
+        design = request.FILES.get('design')
+        if request.user == request_to_change.user:
+            request_to_change.change_status(new_status, comment, design)
         return HttpResponseRedirect(reverse('index'))

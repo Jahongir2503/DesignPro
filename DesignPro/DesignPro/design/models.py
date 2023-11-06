@@ -1,7 +1,10 @@
+import django
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.utils import timezone
 
 
 class CustomUser(AbstractUser):
@@ -30,13 +33,31 @@ class Request(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     photo = models.ImageField(upload_to='image/', validators=[FileExtensionValidator(['jpg', 'jpeg', 'png', 'bmp'])])
 
+    def validate_image(fieldfile_obj):
+        filesize = fieldfile_obj.file.size
+        megabyte_limit = 2.0
+        if filesize > megabyte_limit * 1024 * 1024:
+            raise ValidationError("Max file size is %MB" % str(megabyte_limit))
+
     timestamp = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=NEW)
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    due_date = models.DateField()
+    created_at = models.DateTimeField(default=django.utils.timezone.now)
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='requests')
 
     def __str__(self):
         return self.title
+
+    def change_status(self, new_status, comment=None, design=None):
+        if self.status == self.NEW:
+            if new_status == self.COMPLETED and design is not None:
+                self.status = new_status
+                self.design = design
+                self.save()
+            elif new_status == self.IN_PROGRESS and comment is not None:
+                self.status = new_status
+                self.comment = comment
+                self.save()
+        else:
+            raise ValidationError('Смена статуса с «Принято в работу» или «Выполнено» невозможна.')

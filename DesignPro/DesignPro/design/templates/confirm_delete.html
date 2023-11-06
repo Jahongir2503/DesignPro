@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Подтверждение удаления</title>
+</head>
+<body>
+    <h1>Вы уверены, что хотите удалить эту заявку?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="submit" value="Да, удалить">
+    </form>
+    <a href="{% url 'profile' %}">Нет, вернуться назад</a>
+</body>
+</html>
