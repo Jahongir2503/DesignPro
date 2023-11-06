@@ -9,6 +9,6 @@
 
 ``Artem/Artembest123``
 
-``pip install django
+``pip install django /n
 pip install Pillow
 pip instal django-bootstrap5``
