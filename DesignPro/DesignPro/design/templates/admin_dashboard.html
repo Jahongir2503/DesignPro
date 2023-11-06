@@ -1,11 +1,29 @@
 {% block content %}
 <h1>Панель администратора</h1>
+<div class="navbar">
+    <a href="{% url 'index' %}">Главная</a>
+    <a href="{% url 'profile' %}">Личный кабинет</a>
+    <a href="{% url 'logout' %}?next=/">Выйти</a>
+</div>
+
+<h1>Панель администратора</h1>
+
+<a href="{% url 'category_new' %}">Создать новую категорию</a>
+
+{% for category in categories %}
+<div>
+    <h2>{{ category.name }}</h2>
+    <a href="{% url 'category_delete' category.id %}">Удалить категорию</a>
+</div>
+{% endfor %}
+
 <ul>
     {% for request in requests %}
     <li>
         <h3>{{ request.title }}</h3>
         <img src="{{ request.photo.url }}" alt="{{ request.title }}" width="300px" height="250px">
         <p>{{ request.description }}</p>
+        <p>Категория: {{ request.category.name }}</p>
         <p>Статус: {{ request.get_status_display }}</p>
     </li>
     {% endfor %}

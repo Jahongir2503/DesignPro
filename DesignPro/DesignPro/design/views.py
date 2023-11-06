@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import UserPassesTestMixin
@@ -9,10 +8,12 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
+from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, DeleteView
 
 from .forms import CustomUserCreationForm
+from .models import Category
 from .models import Request
 
 
@@ -117,11 +118,30 @@ class DeleteRequestView(LoginRequiredMixin, View):
         return HttpResponseRedirect(reverse('profile'))
 
 
-
 class AdminDashboardView(UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.is_superuser
 
     def get(self, request):
         all_requests = Request.objects.all()
-        return render(request, 'admin_dashboard.html', {'requests': all_requests})
+        categories = Category.objects.all()
+        return render(request, 'admin_dashboard.html', {'requests': all_requests, 'categories': categories})
+
+
+class CategoryCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Category
+    fields = ['name']
+    template_name = 'category_new.html'
+    success_url = reverse_lazy('admin_dashboard')
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
+class CategoryDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Category
+    template_name = 'category_delete.html'
+    success_url = reverse_lazy('admin_dashboard')
+
+    def test_func(self):
+        return self.request.user.is_superuser

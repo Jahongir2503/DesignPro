@@ -1,0 +1,9 @@
+{% block content %}
+  <h1>Добавить новую категорию</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Создать</button>
+  </form>
+  <a href="{% url 'admin_dashboard' %}">Назад</a>
+{% endblock %}

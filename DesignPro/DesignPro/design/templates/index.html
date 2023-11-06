@@ -60,6 +60,7 @@
         <img src="{{ request.photo.url }}" alt="{{ request.title }}" width="300px" height="250px">
         <p>Описание: {{ request.description }}</p>
         <p>Время добавления: {{ request.created_at }}</p>
+        <p>Категория: {{ request.category.name }}</p>
         <p>Статус: {{ request.get_status_display }}</p>
     </li>
     {% empty %}
