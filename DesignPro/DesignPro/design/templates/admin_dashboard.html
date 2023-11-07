@@ -16,6 +16,16 @@
     <a href="{% url 'category_delete' category.id %}">Удалить категорию</a>
 </div>
 {% endfor %}
+<form method="get">
+    <select name="status">
+        <option value="all">Все</option>
+        <option value="NEW">Новая</option>
+        <option value="IN_PROGRESS">Принято в работу</option>
+        <option value="COMPLETED">Выполнено</option>
+    </select>
+    <input type="submit" value="Фильтровать">
+</form>
+
 
 <ul>
     {% for request in requests %}
@@ -25,8 +35,11 @@
         <p>{{ request.description }}</p>
         <p>Категория: {{ request.category.name }}</p>
         <p>Статус: {{ request.get_status_display }}</p>
+        {% if request.status != 'COMPLETED' %}
         <a href="{% url 'change_request_status' request.id %}">Изменить статус</a>
+        {% endif %}
     </li>
     {% endfor %}
+
 </ul>
 {% endblock %}

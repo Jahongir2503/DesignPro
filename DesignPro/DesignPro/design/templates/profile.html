@@ -12,6 +12,16 @@
     <a href="{% url 'index' %}">Главная</a> <br> <br>
     <a href="{% url 'create_request' %}" class="btn btn-primary mb-3">Создать новую заявку</a>
     <h2>Мои заявки</h2>
+    <form method="get">
+        <select name="status">
+            <option value="all">Все</option>
+            <option value="NEW">Новая</option>
+            <option value="IN_PROGRESS">Принято в работу</option>
+            <option value="COMPLETED">Выполнено</option>
+        </select>
+        <input type="submit" value="Фильтровать">
+    </form>
+
     <ul>
         {% for request in user.requests.all %}
         <li>

@@ -73,7 +73,13 @@ class LoginView(View):
 
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'profile.html')
+        status = request.GET.get('status', 'all')
+        if status != 'all':
+            all_requests = Request.objects.filter(status=status)
+        else:
+            all_requests = Request.objects.all()
+        categories = Category.objects.all()
+        return render(request, 'admin_dashboard.html', {'requests': all_requests, 'categories': categories})
 
 
 class CreateRequestView(LoginRequiredMixin, CreateView):
@@ -124,7 +130,11 @@ class AdminDashboardView(UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request):
-        all_requests = Request.objects.all()
+        status = request.GET.get('status', 'all')
+        if status != 'all':
+            all_requests = Request.objects.filter(status=status)
+        else:
+            all_requests = Request.objects.all()
         categories = Category.objects.all()
         return render(request, 'admin_dashboard.html', {'requests': all_requests, 'categories': categories})
 
@@ -166,7 +176,7 @@ class ChangeRequestStatusView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
             return self.form_invalid(form)
 
     def form_valid(self, form):
-        print(self.request.FILES)
-        form = ChangeRequestStatusForm(self.request.POST, self.request.FILES, instance=self.object)
+        form = ChangeRequestStatusForm(self.request.POST, self.request.FILES,
+                                       instance=self.object)  # Обратите внимание на self.request.FILES
         form.save()
         return super().form_valid(form)
